@@ -6,7 +6,7 @@ const siteMetadata = {
   description: '٩(๑•̀ω•́๑)۶',
   language: 'zh-TW',
   theme: 'dark', // system, dark or light
-  siteUrl: 'https://tailwind-nextjs-starter-blog.vercel.app',
+  siteUrl: 'https://www.min-hsien.com/',
   siteRepo: 'https://github.com/MHchihuahua/tailwind-nextjs-starter-blog',
   siteLogo: `${process.env.BASE_PATH || ''}/static/images/logo.png`,
   socialBanner: `${process.env.BASE_PATH || ''}/static/images/chihuahua.png`,
