@@ -1,0 +1,110 @@
+---
+title: 'JS30 - 01 Drum Kit'
+date: '2025-01-29'
+tags: ['JS30', 'JavaScript']
+draft: false
+summary: 'JS30 Day1 挑戰，利用 JavaScript 製作一個打擊樂器。透過按下鍵盤按鈕，播放對應的音效，並且在按下按鍵時產生動畫效果'
+authors: ['default']
+images: ['/static/images/JS30.jpg']
+canonicalUrl:
+---
+
+![](https://mhchihuahua.github.io/JavaScript30/images/01.png)
+
+🚀 [Demo Link](https://mhchihuahua.github.io/JavaScript30/01/)
+
+Drum Kit 挑戰是當按下鍵盤按鍵時，會發出不同的鼓聲音效
+
+- 透過 `keydown` 事件監聽鍵盤按鍵
+- 透過事件代理與物件儲存，減少不必要的重複查詢，提升效能
+
+---
+
+### 監聽鍵盤事件
+
+監聽 `keydown` 事件，當按下鍵盤按鍵時，會觸發 `playSound` 事件
+
+```javascript
+window.addEventListener('keydown', playSound)
+```
+
+### 儲存 audio 和 key 元素
+
+使用物件來儲存每個按鍵與其對應的音效元素，避免重複查詢 DOM，提升效能
+
+```javascript
+const audioElements = {}
+const keyElements = {}
+
+const keys = document.querySelectorAll('.key')
+keys.forEach((key) => {
+  keyElements[key.dataset.key] = key
+})
+
+const audios = document.querySelectorAll('audio[data-key]')
+audios.forEach((audio) => {
+  audioElements[audio.dataset.key] = audio
+})
+```
+
+- 透過 `dataset.key` 取得每個元素的 `data-key` 屬性，並將其對應的 `key` 和 `audio` 元素儲存到物件中
+
+### 播放音效並加上動畫效果
+
+當觸發 `keydown` 事件時，會根據按鍵碼（`e.code`）取得對應的音效與按鍵元素，播放音效並加上 `.playing` 類別來啟動動畫效果
+
+```javascript
+const playSound = (e) => {
+  const audio = audioElements[e.code]
+  const key = keyElements[e.code]
+
+  if (!audio || !key) return
+
+  audio.currentTime = 0
+  audio.play()
+  key.classList.add('playing')
+}
+```
+
+- `e.code` 對應每個按鍵，並播放對應的音效
+  - 原本教學使用 `e.keyCode` ，但官網表示這個屬性[已經 deprecated](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode)，所以改用 `e.code` 來取得按鍵碼
+- `audio.currentTime = 0` 確保音效可以從頭開始播放
+
+### 移除動畫效果
+
+當過渡動畫結束時，我們需要移除 `.playing` 類別，使按鍵動畫恢復初始狀態
+
+```javascript
+const removeTransition = (e) => {
+  if (e.propertyName !== 'transform') return
+  e.target.classList.remove('playing')
+}
+```
+
+- 因為 `transform` 結束較晚，所以只要 `transform` 結束就可以移除 `.playing` 類別
+
+### 監聽過渡動畫結束事件
+
+原本的寫法是為每個 `.key` 元素分別綁定 `transitionend` 事件
+
+```javascript
+keys.forEach((key) => {
+  key.addEventListener('transitionend', removeTransition)
+})
+```
+
+但可以改為使用事件代理（Event Delegation），來對 `.keys` 父元素統一監聽，這樣不僅能減少監聽器的數量，還能提高效能
+
+```javascript
+document.querySelector('.keys').addEventListener('transitionend', removeTransition)
+```
+
+- 當任何子元素的 `transition` 結束時，事件會冒泡到父元素 `.keys`，觸發 `removeTransition` 事件
+
+---
+
+## 參考資料
+
+- [data-\*](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*)
+- [Using data attributes](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_HTML_problems/Use_data_attributes)
+- [HTMLElement: dataset property](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset)

@@ -1,0 +1,121 @@
+---
+title: 'JS30 - 02 CSS + JS Clock'
+date: '2025-01-30'
+tags: ['JS30', 'JavaScript']
+draft: false
+summary: 'JS30 Day2 挑戰，透過 CSS + JavaScript 製作一個時鐘。使用 CSS 來設定時鐘指針的樣式與旋轉點，透過 JavaScript 來計算秒、分、時針的角度，並利用 `requestAnimationFrame` 來更新畫面'
+authors: ['default']
+images: ['/static/images/JS30.jpg']
+canonicalUrl:
+---
+
+![](https://mhchihuahua.github.io/JavaScript30/images/02.png)
+
+🚀 [Demo Link](https://mhchihuahua.github.io/JavaScript30/02/)
+
+這篇筆記記錄如何使用 CSS + JavaScript 製作一個時鐘，並且確保指針能夠順暢運行
+
+- 使用 CSS 來設定時鐘指針的樣式與旋轉點
+- 透過 JavaScript 來計算秒、分、時針的角度，並利用 `requestAnimationFrame` 來更新畫面
+
+---
+
+## CSS：設定指針的旋轉中心點
+
+初始檔案已經有提供時鐘的樣式，只需要對指針進行樣式的設定
+
+首先要對指針的旋轉中心點進行設置，如果沒有設定的話，預設在 `transform:rotate()` 時，是以元素的中心點為旋轉中心
+
+```css
+.hand {
+  /* ...其他設定 */
+  transform-origin: 100%;
+}
+```
+
+- `transform-origin` 用來設定旋轉中心，100% 代表指針的右邊作為旋轉軸心
+- 指針的底部會固定在時鐘中央，而另一端則圍繞中心轉動
+
+---
+
+## JavaScript：計算指針的角度並更新畫面
+
+### 1️⃣ 取得指針的 DOM 元素
+
+透過 `document.querySelector` 選取秒針、分針、時針的元素，之後會需要更改它們的旋轉角度
+
+```javascript
+const secondHand = document.querySelector('.second-hand')
+const minHand = document.querySelector('.min-hand')
+const hourHand = document.querySelector('.hour-hand')
+```
+
+### 2️⃣ 取得當前時間並計算角度
+
+`setDate` 函式負責：
+
+- 取得當前時間（秒、分、時）
+- 計算每個指針對應的旋轉角度，確保它們能夠平滑移動
+
+```javascript
+const now = new Date()
+const seconds = now.getSeconds()
+const minutes = now.getMinutes() + seconds / 60
+const hours = now.getHours() + minutes / 60
+```
+
+- 分鐘加上秒數的比例，時鐘加上分鐘的比例，讓時鐘的指針動畫可以更加平滑流暢
+
+### 3️⃣ 計算旋轉角度
+
+```javascript
+const secondsDegrees = (seconds / 60) * 360 + 90
+const minsDegrees = (minutes / 60) * 360 + 90
+const hoursDegrees = (hours / 12) * 360 + 90
+```
+
+- 時間對應角度的計算方式
+  - 時鐘一圈是 360 度
+  - 秒針是 60 秒一圈，先將當前秒數除以 60 取得比例，再乘上 360 度；分針同理
+  - 時針是 12 小時一圈，先將當前小時數除以 12 取得比例，再乘上 360 度
+- 為什麼 +90？
+  - 預設的 rotate(0deg) 是指向 9 點鐘方向，但我們希望它從 12 點鐘方向開始轉動，因此需要額外加 90° 來調整基準。
+
+### 4️⃣ 更新指針的旋轉角度
+
+```javascript
+secondHand.style.transform = `rotate(${secondsDegrees}deg)`
+minHand.style.transform = `rotate(${minsDegrees}deg)`
+hourHand.style.transform = `rotate(${hoursDegrees}deg)`
+```
+
+- 透過 `style.transform` 設定指針的 `rotate()` 角度，讓它們旋轉
+
+### 5️⃣ 讓指針持續更新
+
+原始的教學使用 `setInterval` 來每秒更新一次畫面，但這樣會有一些潛在問題：
+
+- 當頁面不在畫面上時，`setInterval` 仍然持續執行，可能影響效能
+- 瀏覽器有可能會延遲 `setInterval` 的執行，使動畫變得不流暢
+
+更好的解法是 `requestAnimationFrame`：
+
+```javascript
+function updateClock() {
+  setDate()
+  requestAnimationFrame(updateClock)
+}
+
+updateClock()
+```
+
+- `requestAnimationFrame` 會在下一次瀏覽器繪製畫面時執行，當頁面不在畫面上時，它會自動暫停，提升效能
+- 讓指針的動畫更加流暢，避免了 `setInterval` 帶來的效能問題
+
+---
+
+## 參考資料
+
+- [transform-origin](https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin)
+- [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
+- [Window.requestAnimationFrame()](https://developer.mozilla.org/zh-TW/docs/Web/API/Window/requestAnimationFrame)
