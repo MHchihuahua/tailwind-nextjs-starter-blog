@@ -1,0 +1,73 @@
+---
+title: 'JS30 - 03 Playing with CSS Variables and JS'
+date: '2025-01-31'
+tags: ['JS30', 'JavaScript']
+draft: false
+summary: 'JS30 Day3 挑戰，利用 CSS 變數（Custom Properties）可以更靈活地管理樣式，並且可以透過 JavaScript 動態更新，實現即時變化，例如這篇的調整間距、模糊程度等'
+authors: ['default']
+images: ['/static/images/JS30.jpg']
+canonicalUrl:
+---
+
+![](https://mhchihuahua.github.io/JavaScript30/images/03.png)
+
+🚀 [Demo Link](https://mhchihuahua.github.io/JavaScript30/03/)
+
+利用 CSS 變數（Custom Properties）可以更靈活地管理樣式，並且可以透過 JavaScript 動態更新，實現即時變化，例如這篇的調整間距、模糊程度等
+
+- `--variableName: value` 用來設定變數
+- `document.documentElement.style.setProperty('--variableName', value)` 用來更新變數的值
+
+---
+
+## CSS：設定變數
+
+`:root`代表 html 元素，可以用來宣告全域 CSS 變數。 CSS 變數的命名規則是以 `--` 開頭
+
+```css
+:root {
+  --base: #46a3ff;
+  --spacing: 5px;
+  --blur: 1px;
+}
+```
+
+- `--base` 設定邊框和標題 JS highlight 顏色
+- `--spacing` 設定間距
+- `--blur` 設定模糊程度
+
+## JavaScript：更新變數的值
+
+### 1️⃣ 取得 DOM 元素並監聽事件
+
+取得父元素 `.controls`，並利用事件代理監聽 `input` 事件，只有當目標元素是 `input` 時才執行
+
+```javascript
+document.querySelector('.controls').addEventListener('input', (event) => {
+  if (!event.target.matches('input')) return
+  //... 更新變數的值
+})
+```
+
+- 跟 Day2 一樣，這裡也是透過事件代理的方式減少監聽器的數量，不用將事件綁定在每個 `input` 上
+
+### 2️⃣ 更新變數的值
+
+透過 `document.documentElement.style.setProperty` 來更新變數的值
+
+```javascript
+const suffix = event.target.dataset.sizing || ''
+const value = `${event.target.value}${suffix}`
+document.documentElement.style.setProperty(`--${event.target.name}`, value)
+```
+
+- `dataset.sizing` 取得 `data-sizing` 的值，如果沒有值，則設為空字串
+  - `data-sizing` 用來設定 spacing 和 blur 的單位
+- `--${event.target.name}` 代表變數名稱，例如 `--spacing`、`--blur` 等
+
+---
+
+## 參考資料
+
+- [:root](https://developer.mozilla.org/en-US/docs/Web/CSS/:root)
+- [Using CSS custom properties (variables)](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)

@@ -1,0 +1,154 @@
+---
+title: 'JS30 - 05 Flex Panels Image Gallery'
+date: '2025-02-03'
+tags: ['JS30', 'JavaScript']
+draft: false
+summary: 'JS30 Day5 挑戰，透過 Flexbox 製作一個圖片展示頁面，每張圖片在點擊時會有動畫效果，並展開圖片並顯示更多文字內容'
+authors: ['default']
+images: ['/static/images/JS30.jpg']
+canonicalUrl:
+---
+
+![](https://mhchihuahua.github.io/JavaScript30/images/05.png)
+
+🚀 [Demo Link](https://mhchihuahua.github.io/JavaScript30/05/)
+
+透過 Flexbox 製作一個圖片展示頁面，每張圖片在點擊時會有動畫效果，並展開圖片並顯示更多文字內容
+
+- `flex` 屬性來設定圖片的排列方式和點擊後的展開效果
+
+---
+
+## CSS：Flexbox
+
+在這個挑戰中，使用 Flexbox 讓 `.panel`（圖片區塊）能夠並排顯示，並且點擊時可以透過 `flex` 動態調整大小，產生展開效果
+
+### 1️⃣ 設定 Flex 容器
+
+在 `.panels` 上設定 `display: flex`，讓 `.panel` 元素變成 Flexbox 的子項目（flex items），並透過 `flex` 屬性控制其大小
+
+```css
+.panels {
+  display: flex;
+}
+```
+
+### 2️⃣ 設定 Flex 子項目
+
+在 `.panel` 上設定 `flex: 1`，讓每個 `.panel` 元素平均分配剩餘空間，並且透過 `flex` 屬性來設定展開效果。
+透過 `flex-direction: column` 來設定 `.panel` 元素的排列方向為垂直，並透過 `justify-content: center` 來讓內容置中
+
+```css
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+```
+
+#### Main-axis 和 Cross-axis
+
+- `flex-direction` 屬性用來設定 Main-axis 的方向，預設為 `row`（水平）
+- `justify-content` 屬性用來設定 **Main-axis** 上的對齊方式
+- `align-items` 屬性用來設定 **Cross-axis** 上的對齊方式
+
+當 `flex-direction` 設定為 `row` 時，Main-axis 為橫向，Cross-axis 為縱向
+
+```plaintext
+ ────────── Main Axis ───────────→
+│   ┌────────┬────────┬────────┐
+│   │ Item 1 │ Item 2 │ Item 3 │
+│   └────────┴────────┴────────┘
+│ Cross Axis
+↓
+```
+
+當 `flex-direction` 設定為 `column` 時，Main-axis 為縱向，Cross-axis 為橫向
+
+```plaintext
+│ Main Axis
+│
+│  ┌────────┐
+│  │ Item 1 │
+│  ├────────┤
+│  │ Item 2 │
+│  ├────────┤
+│  │ Item 3 │
+│  └────────┘
+│
+↓  ── Cross Axis ──→
+```
+
+### 3️⃣ 控制項目大小（flex）
+
+`flex` 屬性是 `flex-grow`、`flex-shrink` 和 `flex-basis` 的簡寫，用來設定彈性盒子的伸縮比例、收縮比例和基準值
+
+- `flex-grow`：當有多餘空間時，項目擴展的比例（預設 0）
+- `flex-shrink`：當空間不足時，項目收縮的比例（預設 1）
+- `flex-basis`：設定項目的初始大小（預設 auto）
+
+在這個挑戰中，要讓 panel 初始時等寬，點擊時可以展開，因此設定為：
+
+```css
+.panel {
+  flex: 1;
+}
+
+.panel.open {
+  flex: 2;
+}
+```
+
+## JavaScript
+
+### 1️⃣ 取得 DOM 元素並監聽事件
+
+因為要做點擊 panel 後的展開效果，所以要取得 panels 元素，並監聽 `click` 事件
+
+```javascript
+const panelsContainer = document.querySelector('.panels')
+panelsContainer.addEventListener('click', togglePanel)
+panelsContainer.addEventListener('transitionend', toggleActive)
+```
+
+- 因為所有 `.panel` 都是 `.panels` 的子元素，可以在 `.panels` 上監聽 `click`，透過事件冒泡來處理點擊事件，這樣不需要對每個 `.panel` 單獨監聽，提高效能
+
+### 2️⃣ 展開 panel
+
+透過 `classList.toggle('open')` 來切換 panel 的展開狀態
+
+```javascript
+function togglePanel(e) {
+  const panel = e.target.closest('.panel')
+  if (!panel) return
+
+  panel.classList.toggle('open')
+}
+```
+
+- `closest()` 方法用來取得最接近的 `.panel`，也就是點擊的 panel
+- `classList.toggle('open')` 用來切換 `open` 類別，如果有 `open` 類別則移除；沒有 `open` 類別則添加
+
+### 3️⃣ 文字效果
+
+透過 `transitionend` 事件監聽，當 flex 屬性動畫結束時，切換 `.open-active` 類別
+
+```javascript
+function toggleActive(e) {
+  if (e.target.classList.contains('panel') && e.propertyName.includes('flex')) {
+    e.target.classList.toggle('open-active')
+  }
+}
+```
+
+- `propertyName` 可能在不同瀏覽器中回傳 `flex` 或 `flex-grow`，所以用 `includes("flex")` 來確保兼容性
+
+---
+
+## 參考資料
+
+- [CSS Flexbox Layout Guide](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
+- [flex](https://developer.mozilla.org/en-US/docs/Web/CSS/flex)
+- [Element: closest() method](https://developer.mozilla.org/en-US/docs/Web/API/Element/closest)
+- [DOMTokenList: toggle() method](https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList/toggle)

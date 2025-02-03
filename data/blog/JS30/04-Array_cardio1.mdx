@@ -1,0 +1,113 @@
+---
+title: 'JS30 - 04 Array Cardio 1'
+date: '2025-02-02'
+tags: ['JS30', 'JavaScript']
+draft: false
+summary: 'JS30 Day4 挑戰，Array Cardio 練習 JavaScript Array 的操作方法，包括 `filter`、`map`、`sort`、`reduce`'
+authors: ['default']
+images: ['/static/images/JS30.jpg']
+canonicalUrl:
+---
+
+![](https://mhchihuahua.github.io/JavaScript30/images/04.png)
+
+🚀 [Demo Link](https://mhchihuahua.github.io/JavaScript30/04/)
+
+這篇筆記記錄如何使用 JavaScript Array 的操作方法，包括 `filter`、`map`、`sort`、`reduce`，並且透過練習來熟悉這些方法的使用
+
+- `filter`：篩選符合條件的元素
+- `map`：對陣列元素進行轉換，並回傳新陣列
+- `sort`：排序陣列中的元素
+- `reduce`：累加陣列中的元素，並回傳單一值
+
+---
+
+## 📌 filter：篩選符合條件的元素
+
+`filter()` 方法會將所有陣列中的元素分別傳入 callback 函式，並將所有回傳值為 true 的元素建構成**新的陣列**，此方法**不會改變原陣列**
+
+```JavaScript
+// 篩選 1500 年到 1600 年之間的發明家
+const filteredInventors = inventors.filter((inventor) => inventor.year >= 1500 && inventor.year < 1600);
+```
+
+## 📌 map：對陣列元素進行轉換，並回傳新陣列
+
+`map()` 方法會建立一個**新的陣列**，其內容為原陣列的每一個元素經由 callback 函式運算後所回傳的結果之集合
+
+```JavaScript
+// 取得發明家的全名
+const fullNames = inventors.map((inventor) => `${inventor.first} ${inventor.last}`);
+```
+
+## 📌 sort：排序陣列中的元素
+
+`sort()` 方法會**原地**對一個陣列的所有元素進行排序，並回傳排序後的陣列。預設排序是根據字串的 Unicode 編碼順序
+
+```JavaScript
+// 依照發明家的出生年份排序
+const sortedInventors = inventors.sort((a, b) => a.year - b.year);
+```
+
+比較數字時，可以使用 `a - b` 來排序
+
+```JavaScript
+const numbers = [5, 2, 10, 1];
+const sortedNumbers = numbers.sort((a, b) => a - b);
+console.log(sortedNumbers); // [1, 2, 5, 10]
+```
+
+- 若 `a - b` 結果為負數，則 `a` 排在 `b` 前面
+- 若 `a - b` 結果為正數，則 `b` 排在 `a` 前面
+- 若 `a - b` 結果為 0，則 `a` 與 `b` 相等
+
+若要依照字串排序，可以使用 `localeCompare()` 方法
+
+```JavaScript
+// 依照發明家的姓氏排序
+const sortedInventors = inventors.sort((a, b) => a.last.localeCompare(b.last));
+```
+
+- `localeCompare()` 方法會比較兩個字串，並回傳一個數字
+  - 回傳值為負數，表示 `a` 排在 `b` 前面
+  - 回傳值為正數，表示 `b` 排在 `a` 前面
+  - 回傳值為 0，表示 `a` 與 `b` 相等
+
+## 📌 reduce：累加陣列中的元素，並回傳單一值
+
+`reduce()` 方法將一個累加器及陣列中每項元素（由左至右）傳入 callback 函式，**將陣列化為單一值**
+
+```JavaScript
+// 計算所有發明家的年齡總和
+const totalYears = inventors.reduce((total, inventor) => total + (inventor.passed - inventor.year), 0);
+```
+
+- `reduce()` 方法的第二個參數是累加器的初始值，這裡設定為 0
+- `total` 是累加器，初始值為 0
+- 如果沒有設定初始值，則陣列第一個元素會成為初始值，並從第二個元素開始執行 callback 函式
+
+簡易數字累加範例：
+
+```JavaScript
+const numbers = [1, 2, 3, 4, 5];
+const total = numbers.reduce((total, number) => total + number, 0);
+console.log(total); // 15
+```
+
+拆解過程：
+
+1. `0 + 1 = 1`
+2. `1 + 2 = 3`
+3. `3 + 3 = 6`
+4. `6 + 4 = 10`
+5. `10 + 5 = 15`
+
+---
+
+## 參考資料
+
+- [Array.prototype.filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
+- [Array.prototype.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+- [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
+- [Array.prototype.reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce)
+- [String.prototype.localeCompare()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare)
