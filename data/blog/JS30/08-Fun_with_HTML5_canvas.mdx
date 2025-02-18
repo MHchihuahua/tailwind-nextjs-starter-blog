@@ -1,0 +1,126 @@
+---
+title: 'JS30 - 08 Fun with HTML5 Canvas'
+date: '2025-02-15'
+tags: ['JS30', 'JavaScript']
+draft: false
+summary: 'JS30 Day8 挑戰，Canvas 畫圖應用，當滑鼠點擊時，可以在畫布上繪製彩虹色的線條，並且隨著滑鼠移動而改變線條的顏色和寬度'
+authors: ['default']
+images: ['/static/images/JS30.jpg']
+canonicalUrl:
+---
+
+![](https://mhchihuahua.github.io/JavaScript30/images/08.png)
+
+🚀 [Demo Link](https://mhchihuahua.github.io/JavaScript30/08/)
+
+Canvas 畫圖應用，當滑鼠點擊時，可以在畫布上繪製彩虹色的線條，並且隨著滑鼠移動而改變線條的顏色和寬度
+
+- 使用 HTML5 Canvas 繪製畫布
+- 滑鼠事件：`mousedown`, `mousemove`, `mouseup`, `mouseout`
+
+---
+
+## 設定 Canvas 畫布
+
+要能在 canvas 上畫圖，需要先取得 canvas 元素，並且取得 2D 繪圖環境
+
+```javascript
+const canvas = document.querySelector('#draw')
+const ctx = canvas.getContext('2d')
+```
+
+## 設定畫布大小與繪圖樣式
+
+canvas 的大小預設是 300\*150，可以透過 JavaScript 設定畫布的大小，以及其他預設的繪圖樣式
+
+```javascript
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight - 150
+ctx.lineWidth = 5
+ctx.lineJoin = 'round'
+ctx.lineCap = 'round'
+```
+
+- 設定 canvas 的寬高為整個視窗大小，讓畫布能填滿整個畫面
+  - 因為最上面有設一個 "HTML5 canvas" 標題，所以 height 減去 150 是為了避免畫布被遮擋
+- `lineWidth`：線條的寬度
+- `lineJoin`：線條相交的樣式，`round` 表示圓角
+- `lineCap`：線條的端點樣式，`round` 表示圓角
+
+### 相關變數
+
+處理完畫布的設定後，可以設定一些變數來控制繪圖的行為，例如是否正在繪畫、前一個座標、色相值、線條寬度是否增加等等
+
+```javascript
+let isPainting = false
+let prevX = 0
+let prevY = 0
+let hueValue = 0
+let isIncreasingWidth = true
+```
+
+- `isPainting`：是否正在繪畫
+- `prevX`、`prevY`：紀錄前一個座標的 x, y 值
+- `hueValue`：控制筆刷顏色，使用 HSL 色彩模式（色相 hue 會隨著畫畫變化，產生彩虹效果）
+- `isIncreasingWidth`：控制線條寬度是否增加的 flag
+
+## 繪製畫布
+
+```javascript
+const paint = (e) => {
+  if (!isPainting) return
+
+  ctx.strokeStyle = `hsl(${hueValue}, 100%, 50%)`
+  ctx.beginPath()
+  ctx.moveTo(prevX, prevY)
+  ctx.lineTo(e.offsetX, e.offsetY)
+  ctx.stroke()
+  [prevX, prevY] = [e.offsetX, e.offsetY]
+  hueValue = (hueValue + 1) % 360
+
+  if (ctx.lineWidth >= 50 || ctx.lineWidth < 5) {
+    isIncreasingWidth = !isIncreasingWidth
+  }
+
+  isIncreasingWidth ? ctx.lineWidth++ : ctx.lineWidth--
+}
+```
+
+- ctx 的屬性設定：
+  - `strokeStyle`：設定線條的顏色，使用 HSL 色彩模式，色相值 `hueValue` 會隨著畫畫變化，產生彩虹效果
+  - `beginPath()`：開始一條新的路徑
+  - `moveTo()`：設定路徑的起點
+  - `lineTo()`：設定路徑的終點
+  - `stroke()`：繪製路徑
+- `prevX`、`prevY` 更新為當前的座標
+- `hueValue` 讓色相值在 0~360 之間循環，每次畫線時增加 1，當超過 360 會歸零，形成彩虹色變化
+- 透過 `isIncreasingWidth` 控制線條寬度，會在 `lineWidth` 達到 50 或 5 時反轉方向，使線條寬度來回變化，產生動態效果
+
+## 滑鼠事件
+
+控制當滑鼠按下時開始繪畫，滑鼠移動時繪製路徑，滑鼠放開時停止繪畫
+
+````javascript
+const stopPainting = () => (isPainting = false);
+
+canvas.addEventListener("mousemove", paint);
+canvas.addEventListener("mousedown", (e) => {
+    isPainting = true;
+    [prevX, prevY] = [e.offsetX, e.offsetY];
+});
+canvas.addEventListener("mouseup", stopPainting);
+canvas.addEventListener("mouseout", stopPainting);
+```
+
+- `mousemove`：當滑鼠移動時，觸發 `paint` 函式，繪製路徑
+- `mousedown`：當滑鼠按下時，設定 `isPainting` 為 `true`，並且設定起始座標
+    - 設定 `[prevX, prevY]` 是為了確保繪畫從滑鼠點擊的位置開始，避免畫線的錯誤
+- `mouseup`、`mouseout`：當滑鼠放開或移出畫布時，停止繪畫
+
+---
+
+## 參考資料
+
+- [Basic usage of canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_usage)
+- [hsl()](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/hsl)
+````

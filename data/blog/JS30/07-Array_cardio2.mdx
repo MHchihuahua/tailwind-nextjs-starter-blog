@@ -1,0 +1,96 @@
+---
+title: 'JS30 - 07 Array Cardio 2'
+date: '2025-02-13'
+tags: ['JS30', 'JavaScript']
+draft: false
+summary: 'JS30 Day7 挑戰，Array Cardio 練習 JavaScript Array 的操作方法，包括 `some`, `every`, `find`, `findIndex`'
+authors: ['default']
+images: ['/static/images/JS30.jpg']
+canonicalUrl:
+---
+
+![](https://mhchihuahua.github.io/JavaScript30/images/07.png)
+
+🚀 [Demo Link](https://mhchihuahua.github.io/JavaScript30/07/)
+
+這篇筆記記錄如何使用 JavaScript Array 的操作方法，包括 `some`, `every`, `find`, `findIndex`，並且透過練習來熟悉這些方法的使用
+
+- `some`：陣列中是否有**至少一個**符合測試函式的元素
+- `every`：陣列中**所有**元素是否符合測試函式
+- `find`：回傳陣列中符合測試函式的**第一個元素**
+- `findIndex`：回傳陣列中符合測試函式的第一個元素的索引
+
+---
+
+## 📌 some
+
+`some()` 方法會測試陣列中的每個元素是否符合測試函式，只要**至少一個**元素符合條件就會回傳 `true`，否則回傳 `false`
+
+```javascript
+const currentYear = new Date().getFullYear()
+
+// 是否有人成年
+const hasAdult = people.some((person) => currentYear - person.year >= 19)
+```
+
+## 📌 every
+
+`every()` 方法會測試陣列中的每個元素是否符合測試函式，當**所有**元素都符合條件才會回傳 `true`，否則回傳 `false`
+
+```javascript
+// 是否所有人都成年
+const isEveryoneAdult = people.every((person) => currentYear - person.year >= 19)
+```
+
+## 📌 find
+
+`find()` 方法會回傳陣列中符合測試函式的**第一個元素**，若沒有符合條件的元素則回傳 `undefined`
+
+```javascript
+// 找到 ID 為 823423 的評論
+const comment = comments.find((comment) => comment.id === 823423)
+```
+
+## 📌 findIndex
+
+`findIndex()` 方法會回傳陣列中符合測試函式的第一個元素的索引，若沒有符合條件的元素則回傳 `-1`
+
+```javascript
+// 找到 ID 為 823423 的評論的索引
+const commentIndex = comments.findIndex((comment) => comment.id === 823423)
+```
+
+## 📌 slice
+
+`slice()` 方法會回傳一個新陣列，為原陣列選擇之 start 至 end（不含 end）部分的淺拷貝，舉個例子說：
+
+```javascript
+const arr = [1, 2, 3, 4, 5]
+console.log(arr.slice(1, 4)) // [2, 3, 4]，不包含 index 4 的元素
+```
+
+```javascript
+// 刪除 ID 為 823423 的評論
+if (commentIndex !== -1) {
+  const newComments = [...comments.slice(0, commentIndex), ...comments.slice(commentIndex + 1)]
+}
+```
+
+- 透過展開運算子 `...` 來合併陣列，不然會變成巢狀陣列
+
+## 💡 整理
+
+- `some()` 只要**一個**元素符合測試函式就回傳 `true`，找不到回傳 `false`
+- `every()` 只有**所有**元素都符合測試函式才回傳 `true`，找不到回傳 `false`
+- `find()` 會回傳符合測試函式的**第一個元素**，找不到回傳 `undefined`
+- `filter()` 會回傳符合測試函式的**所有元素**，找不到回傳空陣列 `[]`
+
+---
+
+## 參考資料
+
+- [Array.prototype.some()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)
+- [Array.prototype.every()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every)
+- [Array.prototype.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
+- [Array.prototype.findIndex()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)
+- [Array.prototype.slice()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)

@@ -1,0 +1,90 @@
+---
+title: 'JS30 - 06 AJAX Type Ahead'
+date: '2025-02-12'
+tags: ['JS30', 'JavaScript']
+draft: false
+summary: 'JS30 Day6 挑戰，透過 JSON 檔案讀取城市資料，根據使用者輸入的關鍵字篩選符合條件的城市或州，並顯示在畫面上'
+authors: ['default']
+images: ['/static/images/JS30.jpg']
+canonicalUrl:
+---
+
+![](https://mhchihuahua.github.io/JavaScript30/images/06.png)
+
+🚀 [Demo Link](https://mhchihuahua.github.io/JavaScript30/06/)
+
+透過 JSON 檔案讀取城市資料，根據使用者輸入的關鍵字篩選符合條件的城市或州，並顯示在畫面上
+
+- 使用 `fetch` 讀取 JSON 檔案
+- 透過 `RegExp` 建立正規表達式，進行關鍵字的比對
+
+---
+
+## 📌 Fetch API
+
+原程式中有定義 endpoint 變數，值是 JSON 檔案的 URL，裡面有城市和州的資料
+
+```javascript
+const endpoint =
+  'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json'
+```
+
+透過 `fetch()` 用來獲取網路資源，會回傳 `Promise`，可以使用 `.then()` 來處理回傳的資料
+
+```javascript
+const cities = []
+
+fetch(endpoint)
+  .then((res) => res.json())
+  .then((data) => cities.push(...data))
+  .catch((error) => console.error(error))
+```
+
+- `fetch` 會回傳 `Response` 物件，其 body 屬性是一個 `ReadableStream` 實體，可以使用 `json()` 方法將其轉換為 JSON 格式
+- `cities` 用來儲存 JSON 檔案中的城市資料，使用 `push` 方法將資料加入陣列中，並使用展開運算子 `...` 來展開資料，不然會變成嵌套陣列
+
+## 📌 RegExp
+
+`RegExp` 是 JavaScript 的內建物件，用來建立正規表達式，可以比對字串
+
+1. 比較使用者輸入的關鍵字與 cities 中的城市或州名稱：
+
+   ```javascript
+   const findMatches = (wordToMatch, cities) => {
+     return cities.filter((place) => {
+       const regex = new RegExp(wordToMatch, 'gi')
+       return place.city.match(regex) || place.state.match(regex)
+     })
+   }
+   ```
+
+   - `filter()`：過濾符合條件的元素，回傳一個新陣列
+   - `gi`：全域搜尋（global）和不區分大小寫（case-insensitive）
+   - `match()`：會回傳一個陣列，包含符合正規表達式的字串，如果沒有符合的話，會回傳 `null`
+
+2. 將數字格式化加上千分位符號，讓人數的顯示更易讀：
+
+   ```javascript
+   const numberWithCommas = (number) => {
+     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+   }
+   ```
+
+   - `replace()`：利用逗號替換符合正規表達式的部分
+   - `/\B(?=(\d{3})+(?!\d))/g`
+     - `\B`：非單字邊界，避免數字開頭加逗號
+     - `(?=...)`：正向預查(positive lookahead)，確保後面是指定的模式
+     - `(\d{3})`+：表示匹配 3 位數字的群組，可以重複多次
+     - `(?!\d)`：負向預查(negative lookahead)，確保後面沒有數字
+     - `g`：全局匹配
+
+---
+
+## 參考資料
+
+- [Window: fetch() method](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch)
+- [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)
+- [ReadableStream](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream)
+- [Response: json() method](https://developer.mozilla.org/en-US/docs/Web/API/Response/json)
+- [Regular expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions)
+- [String.prototype.match()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
