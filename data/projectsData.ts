@@ -7,6 +7,12 @@ interface Project {
 
 const projectsData: Project[] = [
   {
+    title: 'JavaScript 30 挑戰 (進行中)',
+    description: `透過 JavaScript 30 挑戰，製作 30 個小作品，提升 JavaScript 能力。`,
+    imgSrc: '/static/images/projects/JS30.png',
+    href: 'https://mhchihuahua.github.io/JavaScript30/',
+  },
+  {
     title: '【計畫】設計情境創新工具研究',
     description: `協助成大「設計情境創新工具研究」計畫，利用 AI 技術輔助設計思考流程。開發基於 Python Flask 和 ChatGPT API 的即時網頁應用，透過 SSE 技術實現資料即時更新，並模擬 ChatGPT 打字效果，提升互動性與使用者體驗。`,
     imgSrc: '/static/images/projects/designThinking.png',
